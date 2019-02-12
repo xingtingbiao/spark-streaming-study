@@ -69,9 +69,154 @@ Flume架构及核心组件
 
 
 5. Flume实战
-	需求: 从指定的网络端口采集数据输出到控制台
+	
+
+需求一: 从指定的网络端口采集数据输出到控制台
+
+# example.conf: A single-node Flume configuration
+使用Flume的关键就是写配置文件
+1) 配置Source
+2) 配置Channel
+3) 配置Sink
+4) 把以上三个组件串起来
+
+a1: agent名称
+r1: source的名称
+k1: sink的名称
+c1: channel的名称
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = hadoop001
+a1.sources.r1.port = 44444
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+
+
+启动agent
+flume-ng agent -n $agent_name -c conf -f conf/flume-conf.properties.template
+flume-ng agent \
+--name a1 \
+--conf $FLUME_HOME/conf \
+--conf-file $FLUME_HOME/conf/example.conf \
+-Dflume.root.logger=INFO,console
+
+使用telnet进行测试: telnet localhost 44444
+
+Event: { headers:{} body: 68 65 6C 6C 6F 0D hello. }
+Event 是Flume数据传输的基本单元
+Event = 可选的header + byte array
 
 
 
+需求二: 监控一个文件实时采集新增的数据输出到控制台
+Agent选型: exec source + memory channel + logger sink
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = exec
+a1.sources.r1.command = tail -F /home/xingtb/data/data.log
+a1.sources.r1.shell = /bin/sh -c
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+
+启动agent
+flume-ng agent \
+--name a1 \
+--conf $FLUME_HOME/conf \
+--conf-file $FLUME_HOME/conf/exec-memory-logger.conf \
+-Dflume.root.logger=INFO,console
+
+
+需求三(*****): 将服务器A的日志实时采集到服务器B上
+	详见: 需求三的设计图
+	技术选型: 
+		exec source + memory channel + avro sink
+		avro source + memory channel + logger sink
+
+exec-memory-avro.conf
+
+exec-memory-avro.sources = exec-source
+exec-memory-avro.sinks = avro-sink
+exec-memory-avro.channels = memory-channel
+
+exec-memory-avro.sources.exec-source.type = exec
+exec-memory-avro.sources.exec-source.command = tail -F /home/xingtb/data/data.log
+exec-memory-avro.sources.exec-source.shell = /bin/sh -c
+
+exec-memory-avro.sinks.avro-sink.type = avro
+exec-memory-avro.sinks.avro-sink.hostname = hadoop001
+exec-memory-avro.sinks.avro-sink.port = 44444
+
+exec-memory-avro.channels.memory-channel.type = memory
+exec-memory-avro.channels.memory-channel.capacity = 1000
+exec-memory-avro.channels.memory-channel.transactionCapacity = 100
+
+exec-memory-avro.sources.exec-source.channels = memory-channel
+exec-memory-avro.sinks.avro-sink.channel = memory-channel
+
+----------------------------------------------------------------------
+avro-memory-logger.conf
+
+avro-memory-logger.sources = avro-source
+avro-memory-logger.sinks = logger-sink
+avro-memory-logger.channels = memory-channel
+
+avro-memory-logger.sources.avro-source.type = avro
+avro-memory-logger.sources.avro-source.bind = hadoop001
+avro-memory-logger.sources.avro-source.port = 44444
+
+avro-memory-logger.sinks.logger-sink.type = logger
+
+avro-memory-logger.channels.memory-channel.type = memory
+avro-memory-logger.channels.memory-channel.capacity = 1000
+avro-memory-logger.channels.memory-channel.transactionCapacity = 100
+
+avro-memory-logger.sources.avro-source.channels = memory-channel
+avro-memory-logger.sinks.logger-sink.channel = memory-channel
+
+
+注意启动顺序: 先启动监听端口的agent
+flume-ng agent \
+--name avro-memory-logger \
+--conf $FLUME_HOME/conf \
+--conf-file $FLUME_HOME/conf/demand03/avro-memory-logger.conf \
+-Dflume.root.logger=INFO,console
+
+
+flume-ng agent \
+--name exec-memory-avro \
+--conf $FLUME_HOME/conf \
+--conf-file $FLUME_HOME/conf/demand03/exec-memory-avro.conf \
+-Dflume.root.logger=INFO,console
 
 
