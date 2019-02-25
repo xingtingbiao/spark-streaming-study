@@ -44,6 +44,30 @@ Spark Streaming是否需要独立安装?
 
 
 
+5. 从词频统计功能着手入门
+    1. spark-submit执行(生产)
+spark-submit --master local[2] \
+--class org.apache.spark.examples.streaming.NetworkWordCount \
+--name NetworkWordCount \
+/home/xingtb/app/spark-2.2.3-bin-2.6.0-cdh5.7.0/examples/jars/spark-examples_2.11-2.2.3.jar hadoop001 9999
+
+    2. spark-shell执行(测试)
+        spark-shell --master local[2]
+
+    直接copy源码
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+val ssc = new StreamingContext(sc, Seconds(1))
+val lines = ssc.socketTextStream("hadoop001", 9999)
+val words = lines.flatMap(_.split(" "))
+val wordCounts = words.map(x => (x, 1)).reduceByKey(_ + _)
+wordCounts.print()
+ssc.start()
+ssc.awaitTermination()
 
 
+github源码地址: https://github.com/apache/spark
+
+
+补充: $SPARK_HOME/conf/log4j.properties  
+中将log4j.rootCategory=INFO, console 改成 log4j.rootCategory=WARN, console 可以屏蔽info级别的日志
 
