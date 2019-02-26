@@ -1,9 +1,11 @@
-//package com.xtb.spark
-//
-///**
-// * Hello world!
-// *
-// */
-//object App extends Application {
-//  println( "Hello World!" )
-//}
+package com.xtb.spark
+
+/**
+ * Hello world!
+ *
+ */
+object App {
+  def main(args: Array[String]): Unit = {
+    println( "Hello World!" )
+  }
+}

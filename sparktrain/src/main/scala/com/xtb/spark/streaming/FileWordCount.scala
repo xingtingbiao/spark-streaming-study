@@ -4,6 +4,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.log4j.{Level, Logger}
 
+/**
+  * Spark Streaming 处理文件系统数据
+  */
 object FileWordCount {
   Logger.getLogger("org").setLevel(Level.WARN)
   def main(args: Array[String]): Unit = {
