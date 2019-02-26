@@ -8,7 +8,7 @@ public class MyKafkaProducerApp {
         MyKafkaProducer myKafkaProducer = new MyKafkaProducer(KafkaProperties.TOPIC);
         Producer<String, String> producer = myKafkaProducer.getProducer();
         for (int i = 0; i < 20; i++) {
-            producer.send(new ProducerRecord<String, String>(KafkaProperties.TOPIC, "message-" + String.valueOf(i)));
+            producer.send(new ProducerRecord<>(KafkaProperties.TOPIC, "message-" + String.valueOf(i)));
             Thread.sleep(2000);
         }
         System.out.println("send over!");
