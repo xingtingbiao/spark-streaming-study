@@ -71,3 +71,28 @@ github源码地址: https://github.com/apache/spark
 补充: $SPARK_HOME/conf/log4j.properties  
 中将log4j.rootCategory=INFO, console 改成 log4j.rootCategory=WARN, console 可以屏蔽info级别的日志
 
+
+
+
+
+6. 工作原理
+(1) Spark Streaming工作原理(粗粒度)
+    详见图
+    Spark Streaming接收到实时数据流, 把数据按照指定的时间段切成一片片小的数据块, 
+    然后把小的数据块传给Spark Engine处理。
+
+
+(2) Spark Streaming工作原理(细粒度)
+
+
+
+
+
+
+
+
+
+
+
+
+
