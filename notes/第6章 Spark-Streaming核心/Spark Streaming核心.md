@@ -9,7 +9,7 @@ Spark Streaming核心
 
 
 1. 核心概念
-StreamingContext***
+1) StreamingContext***
 
 def this(sparkContext: SparkContext, batchDuration: Duration) = {
   this(sparkContext, null, batchDuration)
@@ -45,9 +45,38 @@ Each RDD in a DStream contains data from a certain interval 每个RDD就是一�
 
 
 
+2) Input Dstreams and Receivers***
+
+Every input DStream (except file stream, discussed later in this section) is associated with a Receiver (Scala doc, Java doc) object which receives the data from a source and stores it in Spark’s memory for processing.
+每一个input DStream(除了文件系统) 都会关联一个从数据源接收数据的Receiver给Spark内存, 以供后续处理
+
+
+3) Transformations***
+详见图
+Similar to that of RDDs, transformations allow the data from the input DStream to be modified.
+
+
+4) Output Operations***
+Output operations allow DStream’s data to be pushed out to external systems like a database or a file systems.
 
 
 
+
+2. 案例实战之Spark Streaming处理socket数据
+详见代码: com.xtb.spark.streaming.NetworkWordCount
+
+
+3. 案例实战之Spark Streaming处理HDFS文件数据
+详见代码: com.xtb.spark.streaming.FileWordCount
+注意: 处理文件系统的数据的时候, 移动的文件要比app创建的晚才行
+
+Note that
+
+    The files must have the same data format.
+    The files must be created in the dataDirectory by atomically moving or renaming them into the data directory.
+    Once moved, the files must not be changed. So if the files are being continuously appended, the new data will not be read.
+
+For simple text files, there is an easier method streamingContext.textFileStream(dataDirectory). And file streams do not require running a receiver, hence does not require allocating cores.
 
 
 
