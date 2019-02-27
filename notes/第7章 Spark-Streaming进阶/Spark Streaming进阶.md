@@ -45,7 +45,15 @@ b: 对于每个RDD中的每个partition都创建了一个conn, 可以优化成�
 
 
 3) 基于window的统计
+理解: 定时的进行一个时间段内数据处理
+两个概念: 
+   window length - The duration of the window (3 in the figure).  窗口的长度, 几个时间段
+   sliding interval - The interval at which the window operation is performed (2 in the figure).  窗口的间隔
 
+注意: 这两个参数和我们的batch size:[Seconds(5)]有关系, 整数倍的关系.
+
+比如: 每隔多久计算某个范围内的数据: 每隔10秒计算前10分钟的wc
+==> 每隔sliding interval统计前window length的值
 
 
 
