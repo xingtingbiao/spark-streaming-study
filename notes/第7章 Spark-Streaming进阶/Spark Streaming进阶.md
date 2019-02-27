@@ -24,7 +24,22 @@ requirement failed: The checkpoint directory has not been set. Please set it by 
 
 
 2) 实战: 计算到目前为止累计出现的单词个数写入到MySQL中
+需求: 将统计结果写入到MySQL
+详见代码: com.xtb.spark.streaming.ForeachRDDApp
+CREATE TABLE `wordcount` (
+`word`  varchar(64) NULL ,
+`numb`  int(10) NULL 
+);
 
+通过插入的sql语句: 
+"insert into wordcount(word, numb) values('" + record._1 + "'," + record._2 + ")"
+存在的问题: 
+a: 对于已有的数据没有做更新, 而是所有的数据都是做insert处理
+    改进思路: 
+        a) 在插入数据前先做判断单词是否存在, 如果存在就做update处理, 如果不存在就做insert处理
+        b) 工作中: HBase/Redis 内部就有这样的API实现
+
+b: 对于每个RDD中的每个partition都创建了一个conn, 可以优化成连接池实现
 
 
 

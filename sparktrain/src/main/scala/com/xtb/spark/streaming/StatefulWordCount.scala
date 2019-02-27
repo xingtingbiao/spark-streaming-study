@@ -5,7 +5,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 /**
-  * 有状态的词频统计
+  * 使用Spark Streaming做有状态的词频统计
   */
 object StatefulWordCount {
   Logger.getLogger("org").setLevel(Level.WARN)
