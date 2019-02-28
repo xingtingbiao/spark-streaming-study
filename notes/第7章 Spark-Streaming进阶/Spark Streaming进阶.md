@@ -80,10 +80,12 @@ left join
 (ls: [<20180808,ls>, <true>])
 (ww: [<20180808,ww>, <false>])  ==> tuple 1
 
+详见代码: com.xtb.spark.streaming.TransformApp
+
 
 
 5) 实战: Spark Streaming整合Spark SQL实战
-
+详见代码: com.xtb.spark.streaming.SqlNetworkWordCount
 
 
 
