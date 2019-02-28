@@ -8,7 +8,8 @@ object SparkWindowDemo {
   Logger.getLogger("org").setLevel(Level.WARN)
   def main(args: Array[String]): Unit = {
     val parkConf = new SparkConf().setMaster("local[2]").setAppName("window")
-    val ssc = new StreamingContext(parkConf, Seconds(2))
+    // 这里的batch size时长必须是下面窗口时间的约数
+    val ssc = new StreamingContext(parkConf, Seconds(3))
     ssc.checkpoint(".")
     val ds = ssc.socketTextStream("hadoop001", 9999)
     //Seconds(20)表示窗口的宽度   Seconds(10)表示多久滑动一次(滑动的时间长度)
