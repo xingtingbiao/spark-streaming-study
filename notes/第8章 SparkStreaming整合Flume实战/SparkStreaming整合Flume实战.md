@@ -6,6 +6,8 @@ Spark Streaming整合Flume实战
 
 
 
+
+实战一: Flume-style Push-based Approach
 1) Push方式整合
 
 step1: Flume配置文件的编写
@@ -39,11 +41,35 @@ flume-ng agent \
 
 注意: 本地测试需要将avro-sink.hostname写成本地代码所在的主机IP(192.168.2.191)
 
-step2: 代码的开发
+
+step2: 代码的开发以及本地的联调
 1) 启动SparkStreaming作业
 2) 启动Flume agent
 3) 通过 telnet localhost 44444 输入数据, 观察IDEA控制台的输出结果
 
+
+step3: 服务器环境联调
+spark-submit \
+--class com.xtb.spark.streaming.FlumePushWordCount \
+--master local[2] \
+--packages org.apache.spark:spark-streaming-flume_2.11:2.2.3 \
+/home/xingtb/lib/sparktrain-1.0.jar \
+hadoop001 41414
+
+
+spark-submit \
+--class com.xtb.spark.streaming.FlumePushWordCount \
+--master local[2] \
+--jars /home/xingtb/lib/spark-streaming-flume-assembly_2.11-2.2.3.jar \
+/home/xingtb/lib/sparktrain-1.0.jar \
+hadoop001 41414
+
+
+
+
+
+实战二: Pull-based Approach using a Custom Sink
+1) Pull方式整合
 
 
 

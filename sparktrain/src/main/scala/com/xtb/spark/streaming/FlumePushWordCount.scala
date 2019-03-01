@@ -18,7 +18,7 @@ object FlumePushWordCount {
     }
     val Array(hostname, port) = args
 
-    val sparkConf = new SparkConf().setMaster("local[2]").setAppName("FlumePushWordCount")
+    val sparkConf = new SparkConf()//.setMaster("local[2]").setAppName("FlumePushWordCount")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
 
     //TODO... 如何使用SparkStreaming整合Flume
