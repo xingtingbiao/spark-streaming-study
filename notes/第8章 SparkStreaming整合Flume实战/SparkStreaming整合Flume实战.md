@@ -70,6 +70,44 @@ hadoop001 41414
 
 实战二: Pull-based Approach using a Custom Sink
 1) Pull方式整合
+原理: sparkstreaming集成flume自定义一个source来接收flume的sink数据, 所以flume自定义的receiver接收器相当于缓冲区的概率
+
+step1: Flume配置文件的编写
+
+Flume Agent的编写: flume_pull_streaming.conf
+
+simple-agent.sources = netcat-source
+simple-agent.sinks = spark-sink
+simple-agent.channels = memory-channel
+
+simple-agent.sources.netcat-source.type = netcat
+simple-agent.sources.netcat-source.bind = hadoop001
+simple-agent.sources.netcat-source.port = 44444
+
+simple-agent.sinks.spark-sink.type = org.apache.spark.streaming.flume.sink.SparkSink
+simple-agent.sinks.spark-sink.hostname = hadoop001
+simple-agent.sinks.spark-sink.port = 41414
+
+simple-agent.channels.memory-channel.type = memory
+simple-agent.channels.memory-channel.capacity = 1000
+simple-agent.channels.memory-channel.transactionCapacity = 100
+
+simple-agent.sources.netcat-source.channels = memory-channel
+simple-agent.sinks.spark-sink.channel = memory-channel
+
+注意点: 先启动flume 后启动Spark Streaming应用程序
+flume-ng agent \
+--name simple-agent \
+--conf $FLUME_HOME/conf \
+--conf-file $FLUME_HOME/conf/spark_conf/flume_pull_streaming.conf \
+-Dflume.root.logger=INFO,console
 
 
+服务器上运行的脚本
+spark-submit \
+--class com.xtb.spark.streaming.FlumePullWordCount \
+--master local[2] \
+--jars /home/xingtb/lib/spark-streaming-flume-assembly_2.11-2.2.3.jar \
+/home/xingtb/lib/sparktrain-1.0.jar \
+hadoop001 41414
 
