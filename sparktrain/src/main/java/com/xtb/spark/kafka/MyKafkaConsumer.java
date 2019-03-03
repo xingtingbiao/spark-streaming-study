@@ -28,11 +28,12 @@ public class MyKafkaConsumer {
         //用于分配topic和partition
         //不改变当前offset，指定从这个topic和partition的开始位置获取。
         consumer.assign(Collections.singletonList(new TopicPartition(KafkaProperties.TOPIC, 0)));
-        consumer.seekToBeginning(Collections.singletonList(new TopicPartition(KafkaProperties.TOPIC, 0)));
-        while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(100));
-            for (ConsumerRecord<String, String> record : records)
-                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
-        }
+        // 这里使用kafka2.1.0, 为了使用对接SparkStreaming, 版本改为0.9.0.0, 所以将以下代码注释
+//        consumer.seekToBeginning(Collections.singletonList(new TopicPartition(KafkaProperties.TOPIC, 0)));
+//        while (true) {
+//            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(100));
+//            for (ConsumerRecord<String, String> record : records)
+//                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+//        }
     }
 }
