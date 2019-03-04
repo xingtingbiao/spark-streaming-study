@@ -44,22 +44,24 @@
             <version>${scala.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>${kafka.version}</version>
-            <!--这里是kafka2.1.0的坑, maven依赖冲突了-->
-            <exclusions>
+        <!--这里有个版本的坑StringDecoder是spark-streaming-kafka-0-8_2.11的0.8.2.1版本, 如果这里不注释掉, 调用的就是版本0.9.0.0-->
+        <!--就会出现kafka.cluster.BrokerEndPoint cannot be cast to kafka.cluster.Broker错误-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.kafka</groupId>-->
+            <!--<artifactId>kafka_2.11</artifactId>-->
+            <!--<version>${kafka.version}</version>-->
+            <!--&lt;!&ndash;这里是kafka2.1.0的坑, maven依赖冲突了&ndash;&gt;-->
+            <!--<exclusions>-->
+                <!--&lt;!&ndash;<exclusion>&ndash;&gt;-->
+                <!--&lt;!&ndash;<groupId>com.fasterxml.jackson.core</groupId>&ndash;&gt;-->
+                <!--&lt;!&ndash;<artifactId>jackson-databind</artifactId>&ndash;&gt;-->
+                <!--&lt;!&ndash;</exclusion>&ndash;&gt;-->
                 <!--<exclusion>-->
-                <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-                <!--<artifactId>jackson-databind</artifactId>-->
+                    <!--<groupId>org.scala-lang</groupId>-->
+                    <!--<artifactId>scala-library</artifactId>-->
                 <!--</exclusion>-->
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <!--</exclusions>-->
+        <!--</dependency>-->
         <!-- https://mvnrepository.com/artifact/net.jpountz.lz4/lz4 -->
         <dependency>
             <groupId>net.jpountz.lz4</groupId>

@@ -1,3 +1,4 @@
+/*
 package com.xtb.spark.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -9,9 +10,11 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
+*/
 /**
  * Kafka 消费者的练习
- */
+ *//*
+
 public class MyKafkaConsumer {
 
     public static void main(String[] args) {
@@ -37,3 +40,4 @@ public class MyKafkaConsumer {
 //        }
     }
 }
+*/
