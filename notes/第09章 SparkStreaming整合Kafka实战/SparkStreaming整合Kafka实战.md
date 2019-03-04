@@ -38,8 +38,14 @@ spark-submit \
 基于Direct的整合
 原理: 周期性的检查kafka的offsets(偏移量), 拿到偏移量后直接调用kafka的API读取分区数据
 1) 详见开发代码: com.xtb.spark.streaming.KafkaDirectWordCount
-2) 
 
+2) 服务器上运行:
+spark-submit \
+--class com.xtb.spark.streaming.KafkaDirectWordCount \
+--master local[2] \
+--name KafkaDirectWordCount \
+--jars /home/xingtb/lib/spark-streaming-kafka-0-8-assembly_2.11-2.2.3.jar \
+/home/xingtb/lib/sparktrain-1.0.jar hadoop001:9092 kafka_streaming_topic
 
 
 
