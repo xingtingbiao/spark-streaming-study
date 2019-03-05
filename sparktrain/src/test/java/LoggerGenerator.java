@@ -11,7 +11,7 @@ public class LoggerGenerator {
         int index = 0;
         while (true) {
             Thread.sleep(1000);
-            log.info("current value is : " + index++);
+            log.info("value : " + index++);
         }
     }
 }

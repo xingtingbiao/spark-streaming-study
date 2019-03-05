@@ -45,8 +45,8 @@ flume-ng agent \
 
 c. 编写本地log4j往flume监听的端口41414发送日志. 具体参考Flume官网的: Log4J Appender
 
-
-
-
+编译出错:
+java.lang.ClassNotFoundException: org.apache.flume.clients.log4jappender.Log4jAppender
+缺少jar包
 
 
