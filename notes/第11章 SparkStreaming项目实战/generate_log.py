@@ -38,3 +38,4 @@ def generate_log(count=10):
 if __name__ == '__main__':
     generate_log()
     pass
+    
