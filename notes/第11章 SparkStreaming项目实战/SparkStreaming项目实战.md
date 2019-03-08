@@ -36,7 +36,7 @@ SparkStreaming 项目实战
 
 三. 功能开发及本地运行
 1) 使用Python脚本实时产生数据
-
+    1. Python实时日志产生器开发
 
 
 
