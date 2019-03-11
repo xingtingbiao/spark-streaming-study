@@ -38,6 +38,40 @@ SparkStreaming 项目实战
 1) 使用Python脚本实时产生数据
     1. Python实时日志产生器开发
 
+2) 通过定时调度工具每一分钟产生一批数据
+    Linux crontab
+    网站: http://tool.lu/crontab
+    每一分钟执行一次的crontab表达式: */1 * * * * 
+
+    如何开启: 
+    crontab -e
+        */1 * * * *  /home/xingtb/data/project/generate_log.sh
+
+crontab补充:
+Linux
+*    *    *    *    *    *
+-    -    -    -    -    -
+|    |    |    |    |    |
+|    |    |    |    |    + year [optional]
+|    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7)
+|    |    |    +---------- month (1 - 12)
+|    |    +--------------- day of month (1 - 31)
+|    +-------------------- hour (0 - 23)
++------------------------- min (0 - 59)
+
+Java(Spring)
+*    *    *    *    *    *    *
+-    -    -    -    -    -    -
+|    |    |    |    |    |    |
+|    |    |    |    |    |    + year [optional]
+|    |    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7)
+|    |    |    |    +---------- month (1 - 12)
+|    |    |    +--------------- day of month (1 - 31)
+|    |    +-------------------- hour (0 - 23)
+|    +------------------------- min (0 - 59)
++------------------------------ second (0 - 59)
+
+
 
 
 四. 生产环境运行

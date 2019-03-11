@@ -64,11 +64,14 @@ def sample_code():
 
 def generate_log(count=10):
     time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    # f = open("/home/xingtb/data/project/logs/access.log", "w+")
     while count >= 1:
-        query_log = "{local_time}\t{url}\t{ip}\t{refer}\t{code}"\
-            .format(local_time=time_str, url=sample_url(), ip=sample_ip(), refer=sample_refer(), code=sample_code())
+        query_log = "{ip}\t{local_time}\t\"GET /{url} HTTP/1.1\"\t{code}\t{refer}"\
+            .format(ip=sample_ip(), local_time=time_str, url=sample_url(), code=sample_code(), refer=sample_refer())
         print query_log
+        # f.write(query_log + "\n")
         count = count - 1
+    # f.close()
     pass
 
 
