@@ -74,6 +74,90 @@ Java(Spring)
 
 
 
-四. 生产环境运行
+四. 对接日志==>Flume==>Kafka==>Spark Streaming
+1) 对接python日志产生器输出的日志到Flume
+streaming-project.conf
+
+选型: access.log  ==>  控制台输出
+      exec
+      memory
+      logger
+
+
+exec-memory-logger.sources = exec-source
+exec-memory-logger.sinks = logger-sink
+exec-memory-logger.channels = memory-channel
+
+exec-memory-logger.sources.exec-source.type = exec
+exec-memory-logger.sources.exec-source.command = tail -F /home/xingtb/data/project/logs/access.log
+exec-memory-logger.sources.exec-source.shell = /bin/sh -c
+
+exec-memory-logger.channels.memory-channel.type = memory
+exec-memory-logger.channels.memory-channel.capacity = 1000
+exec-memory-logger.channels.memory-channel.transactionCapacity = 100
+
+exec-memory-logger.sinks.logger-sink.type = logger
+
+exec-memory-logger.sources.exec-source.channels = memory-channel
+exec-memory-logger.sinks.logger-sink.channel = memory-channel
+
+
+启动agent
+flume-ng agent \
+--name exec-memory-logger \
+--conf $FLUME_HOME/conf \
+--conf-file /home/xingtb/data/project/streaming-project.conf \
+-Dflume.root.logger=INFO,console
+
+
+
+2) 日志 ==> Flume ==> Kafka
+    a. 启动zk: ./zkServer.sh start
+    b. 启动Kafka Server: ./kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties &
+    c. 修改Flume配置文件使得flume sink数据到Kafka
+
+
+streaming-project2.conf
+
+exec-memory-kafka.sources = exec-source
+exec-memory-kafka.sinks = kafka-sink
+exec-memory-kafka.channels = memory-channel
+
+exec-memory-kafka.sources.exec-source.type = exec
+exec-memory-kafka.sources.exec-source.command = tail -F /home/xingtb/data/project/logs/access.log
+exec-memory-kafka.sources.exec-source.shell = /bin/sh -c
+
+exec-memory-kafka.channels.memory-channel.type = memory
+exec-memory-kafka.channels.memory-channel.capacity = 1000
+exec-memory-kafka.channels.memory-channel.transactionCapacity = 100
+
+exec-memory-kafka.sinks.kafka-sink.type = org.apache.flume.sink.kafka.KafkaSink
+exec-memory-kafka.sinks.kafka-sink.brokerList=hadoop001:9092
+exec-memory-kafka.sinks.kafka-sink.topic=streamingtopic
+exec-memory-kafka.sinks.kafka-sink.batchSize=10
+exec-memory-kafka.sinks.kafka-sink.requiredAcks=1
+
+exec-memory-kafka.sources.exec-source.channels = memory-channel
+exec-memory-kafka.sinks.kafka-sink.channel = memory-channel
+
+
+启动agent
+flume-ng agent \
+--name exec-memory-kafka \
+--conf $FLUME_HOME/conf \
+--conf-file /home/xingtb/data/project/streaming-project2.conf \
+-Dflume.root.logger=INFO,console
+
+
+kafka-console-consumer.sh --zookeeper hadoop001:2181 --topic streamingtopic
+
+
+
+
+
+
+
+五. 生产环境运行
+
 
 
