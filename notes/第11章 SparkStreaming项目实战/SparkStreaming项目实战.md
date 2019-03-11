@@ -152,9 +152,38 @@ flume-ng agent \
 kafka-console-consumer.sh --zookeeper hadoop001:2181 --topic streamingtopic
 
 
+3) 打通Flume&Kafka&Spark Streaming线路
+    a. 详见代码: com.xtb.spark.project.StateCountStreamingApp
 
 
 
+4) 数据清洗(按照需求对实时产生的点击流数据进行数据清洗)
+    a. 从原始日志中取出我们所需的字段信息即可
+    清洗的数据如下:
+
+ClickLog(72.55.187.46,20190311235501,131,500,http://www.sogou.com/web?query=Spark SQL实战)
+ClickLog(187.167.124.63,20190311235501,145,200,-)
+ClickLog(10.29.156.167,20190311235501,112,500,-)
+ClickLog(87.72.132.124,20190311235501,128,404,-)
+ClickLog(187.167.55.143,20190311235501,112,500,-)
+ClickLog(167.46.29.63,20190311235501,112,500,-)
+ClickLog(10.167.46.124,20190311235501,112,404,-)
+ClickLog(98.72.132.29,20190311235501,145,404,http://search.yahoo.com/search?p=Hadoop基础)
+ClickLog(187.143.55.168,20190311235501,131,200,-)
+ClickLog(168.10.87.29,20190311235501,145,500,http://cn.bing.com/search?q=大数据面试)
+    
+补充注意: 配置稍微高一点
+    hadoop001: 8Core  8G
+
+
+
+5) 需求功能开发
+    a. 统计今天到现在为止实战课程的访问量
+
+
+
+
+    
 
 
 五. 生产环境运行
