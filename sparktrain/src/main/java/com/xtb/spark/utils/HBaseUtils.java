@@ -72,10 +72,10 @@ public class HBaseUtils {
 //        HTable table = HBaseUtils.getInstance().getTable("imooc_course_clickcount");
 //        System.out.println(table.getName().getNameAsString());
         String tableName = "imooc_course_clickcount";
-        String rowKey = "20181111";
+        String rowKey = "20181111_88";
         String cf = "info";
         String column = "click_count";
-        String value = "20";
+        String value = "30";
         HBaseUtils.getInstance().put(tableName, rowKey, cf, column, value);
     }
 }
