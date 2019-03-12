@@ -231,10 +231,78 @@ ClickLog(168.10.87.29,20190311235501,145,500,http://cn.bing.com/search?q=大数�
             20181111 + search + 101
             day_search_courseid
 
+详见代码: com.xtb.spark.project.StateCountStreamingApp
+
+
 
 
 
 五. 生产环境运行
+1) 将项目运行在服务器环境中
+    a. 编译打包
+    b. 运行
+
+打包报错: 
+[ERROR] D:\projects\myProjects\spark-streaming-study\sparktrain\src\main\scala\com\xtb\spark\dao\CourseClickCountDao.scala:4: error: object HBaseUtils is not a member of package com.xtb.spark.utils
+
+注释pom.xml:
+<!--<sourceDirectory>src/main/scala</sourceDirectory>-->
+<!--<testSourceDirectory>src/test/scala</testSourceDirectory>-->
+
+运行命令:
+spark-submit \
+--master local[4] \
+--name StateCountStreamingApp \
+--class com.xtb.spark.project.StateCountStreamingApp \
+--jars /home/xingtb/lib/spark-streaming-kafka-0-8-assembly_2.11-2.2.3.jar \
+/home/xingtb/lib/sparktrain-1.0.jar hadoop001:9092 streamingtopic
+
+
+error:
+java.lang.NoClassDefFoundError: org/apache/hadoop/hbase/client/HBaseAdmin
+	at com.xtb.spark.utils.HBaseUtils.<init>(HBaseUtils.java:27)
+	at com.xtb.spark.utils.HBaseUtils.getInstance(HBaseUtils.java:37)
+	at com.xtb.spark.dao.CourseClickCountDao$.save(CourseClickCountDao.scala:24)
+	at com.xtb.spark.project.StateCountStreamingApp$$anonfun$main$4$$anonfun$apply$1.apply(StateCountStreamingApp.scala:63)
+	at com.xtb.spark.project.StateCountStreamingApp$$anonfun$main$4$$anonfun$apply$1.apply(StateCountStreamingApp.scala:58)
+	at org.apache.spark.rdd.RDD$$anonfun$foreachPartition$1$$anonfun$apply$29.apply(RDD.scala:934)
+	at org.apache.spark.rdd.RDD$$anonfun$foreachPartition$1$$anonfun$apply$29.apply(RDD.scala:934)
+	at org.apache.spark.SparkContext$$anonfun$runJob$5.apply(SparkContext.scala:2069)
+	at org.apache.spark.SparkContext$$anonfun$runJob$5.apply(SparkContext.scala:2069)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:87)
+	at org.apache.spark.scheduler.Task.run(Task.scala:109)
+	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:344)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+spark-submit \
+--master local[4] \
+--name StateCountStreamingApp \
+--class com.xtb.spark.project.StateCountStreamingApp \
+--packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.2.3 \
+--jars $(echo /home/xingtb/app/hbase-1.2.0-cdh5.7.0/lib/*.jar | tr ' ' ',') \
+/home/xingtb/lib/sparktrain-1.0.jar hadoop001:9092 streamingtopic
+
+spark-submit \
+--master local[4] \
+--name StateCountStreamingApp \
+--class com.xtb.spark.project.StateCountStreamingApp \
+--jars $(echo /home/xingtb/app/hbase-1.2.0-cdh5.7.0/lib/*.jar | tr ' ' ',') \
+/home/xingtb/lib/sparktrain-1.0.jar hadoop001:9092 streamingtopic
+
+
+由于--packages 包没下载成功: 可以直接将/home/xingtb/lib/spark-streaming-kafka-0-8-assembly_2.11-2.2.3.jar  拷贝到/home/xingtb/app/spark-2.2.3-bin-2.6.0-cdh5.7.0/jars/ 里面
+
+另外: 代码会因为日志的不准确导致数组下标越界异常: 
+log:  23:29:01	"GET /class/128.html HTTP/1.1"	404	-
+error: java.lang.ArrayIndexOutOfBoundsException: 1
+
+
+提交作业时, 注意事项: 
+1) --packages的使用
+2) --jar的使用
 
 
 

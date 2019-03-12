@@ -1,7 +1,7 @@
 package com.xtb.spark.project
 
-import com.xtb.spark.dao.CourseClickCountDao
-import com.xtb.spark.domain.{ClickLog, CourseClickCount}
+import com.xtb.spark.dao.{CourseClickCountDao, CourseSearchClickCountDao}
+import com.xtb.spark.domain.{ClickLog, CourseClickCount, CourseSearchClickCount}
 import com.xtb.spark.utils.DateUtils
 import kafka.serializer.StringDecoder
 import org.apache.log4j.{Level, Logger}
@@ -24,7 +24,7 @@ object StateCountStreamingApp {
     }
 
     val Array(brokers, topics) = args
-    val sparkConf = new SparkConf().setMaster("local[4]").setAppName("StateCountStreamingApp")
+    val sparkConf = new SparkConf() //.setMaster("local[4]").setAppName("StateCountStreamingApp") //服务器上运行时一般都注释
     val ssc = new StreamingContext(sparkConf, Seconds(60))
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
@@ -61,6 +61,21 @@ object StateCountStreamingApp {
           list.append(CourseClickCount(pair._1, pair._2))
         })
         CourseClickCountDao.save(list)
+      })
+    })
+
+    // 测试步骤四: 统计今天到现在为止从搜索引擎引流过来的实战课程的访问量
+    cleanData.filter(_.refer != "-").map(x => {
+      // http://www.baidu.com/s?wd=Hadoop基础
+      val host = x.refer.replaceAll("//", "/").split("/")(1)
+      (x.time.substring(0, 8) + "_" + host + "_" + x.courseId, 1)
+    }).reduceByKey(_ + _).foreachRDD(rdd => {
+      rdd.foreachPartition(p => {
+        val list = new ListBuffer[CourseSearchClickCount]
+        p.foreach(pair => {
+          list.append(CourseSearchClickCount(pair._1, pair._2))
+        })
+        CourseSearchClickCountDao.save(list)
       })
     })
 
