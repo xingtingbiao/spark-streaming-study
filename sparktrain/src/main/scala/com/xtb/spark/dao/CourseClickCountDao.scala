@@ -1,6 +1,9 @@
 package com.xtb.spark.dao
 
 import com.xtb.spark.domain.CourseClickCount
+import com.xtb.spark.utils.HBaseUtils
+import org.apache.hadoop.hbase.client.Get
+import org.apache.hadoop.hbase.util.Bytes
 
 import scala.collection.mutable.ListBuffer
 
@@ -15,10 +18,14 @@ object CourseClickCountDao {
 
   /**
     * 保存数据到HBase
-    * @param list  CourseClickCount集合
+    * @param list CourseClickCount集合
     */
-  def save(list: ListBuffer[CourseClickCount]) = {
-
+  def save(list: ListBuffer[CourseClickCount]): Unit = {
+    val table = HBaseUtils.getInstance().getTable(TABLE_NAME)
+    for (ele <- list) {
+      // incrementColumnValue这个API是增量列值的意思, 将value数值进行累加
+      table.incrementColumnValue(Bytes.toBytes(ele.day_course), Bytes.toBytes(CF), Bytes.toBytes(QUALIFIER), ele.click_count)
+    }
   }
 
   /**
@@ -27,7 +34,22 @@ object CourseClickCountDao {
     * @return 返回对应的20180502_130的访问总数
     */
   def count(day_course: String): Long = {
+    val table = HBaseUtils.getInstance().getTable(TABLE_NAME)
+    val get = new Get(Bytes.toBytes(day_course))
+    val value = table.get(get).getValue(CF.getBytes(), QUALIFIER.getBytes)
+    if (null == value) {
+      0L
+    } else {
+      Bytes.toLong(value)
+    }
+  }
 
-    0L
+  def main(args: Array[String]): Unit = {
+    val list = new ListBuffer[CourseClickCount]
+    list.append(CourseClickCount("20171111_8", 8))
+    list.append(CourseClickCount("20171111_9", 9))
+    list.append(CourseClickCount("20171111_1", 100))
+    save(list)
+    println(count("20171111_8") + " : " + count("20171111_9") + " : " + count("20171111_1"))
   }
 }
