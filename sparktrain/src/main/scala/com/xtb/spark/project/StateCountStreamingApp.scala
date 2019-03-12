@@ -1,6 +1,7 @@
 package com.xtb.spark.project
 
-import com.xtb.spark.domain.ClickLog
+import com.xtb.spark.dao.CourseClickCountDao
+import com.xtb.spark.domain.{ClickLog, CourseClickCount}
 import com.xtb.spark.utils.DateUtils
 import kafka.serializer.StringDecoder
 import org.apache.log4j.{Level, Logger}
@@ -8,8 +9,10 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
+import scala.collection.mutable.ListBuffer
+
 /**
-  *  使用Spark Streaming处理Kafka过来的数据
+  * 使用Spark Streaming处理Kafka过来的数据
   */
 object StateCountStreamingApp {
   Logger.getLogger("org").setLevel(Level.WARN)
@@ -21,7 +24,7 @@ object StateCountStreamingApp {
     }
 
     val Array(brokers, topics) = args
-    val sparkConf = new SparkConf().setMaster("local[2]").setAppName("StateCountStreamingApp")
+    val sparkConf = new SparkConf().setMaster("local[4]").setAppName("StateCountStreamingApp")
     val ssc = new StreamingContext(sparkConf, Seconds(60))
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
@@ -46,7 +49,20 @@ object StateCountStreamingApp {
       ClickLog(infos(0), DateUtils.parseToMinute(infos(1)), courseId, infos(3).toInt, infos(4))
     }).filter(clickLog => clickLog.courseId != 0)
 
-    cleanData.print()
+    // cleanData.print()
+
+    // 测试步骤三: 统计今天到现在为止实战课程的访问量
+    cleanData.map(x => {
+      (x.time.substring(0, 8) + "_" + x.courseId, 1)
+    }).reduceByKey(_ + _).foreachRDD(rdd => {
+      rdd.foreachPartition(partition => {
+        val list = new ListBuffer[CourseClickCount]
+        partition.foreach(pair => {
+          list.append(CourseClickCount(pair._1, pair._2))
+        })
+        CourseClickCountDao.save(list)
+      })
+    })
 
     ssc.start()
     ssc.awaitTermination()
