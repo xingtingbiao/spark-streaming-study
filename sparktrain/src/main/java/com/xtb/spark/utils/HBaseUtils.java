@@ -9,11 +9,11 @@ import org.apache.hadoop.hbase.util.Bytes;
 import java.io.IOException;
 
 /**
- * HBase操作的工具类
+ * HBase操作的工具类, Java工具类建议采用单例模式封装
  */
 public class HBaseUtils {
-    HBaseAdmin admin = null;
-    Configuration configuration = null;
+    private HBaseAdmin admin = null;
+    private Configuration configuration;
 
     /**
      * 私有构造方法
