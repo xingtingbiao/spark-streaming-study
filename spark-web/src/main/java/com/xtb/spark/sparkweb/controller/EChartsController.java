@@ -13,4 +13,9 @@ public class EChartsController {
     public ModelAndView firstDemo() {
         return new ModelAndView("test");
     }
+
+    @RequestMapping(value = "demo", method = RequestMethod.GET)
+    public ModelAndView staticPieChart() {
+        return new ModelAndView("demo");
+    }
 }
