@@ -41,7 +41,7 @@ public class HBaseUtils {
         return instance;
     }
 
-    public HTable getTable(String tableName) {
+    HTable getTable(String tableName) {
         HTable hTable = null;
         try {
             hTable = new HTable(configuration, tableName);
