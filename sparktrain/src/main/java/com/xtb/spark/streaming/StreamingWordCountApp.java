@@ -10,21 +10,21 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 /**
- * 使用
+ * 使用Java编写sparkStreaming应用程序
  */
 public class StreamingWordCountApp {
 
     public static void main(String[] args) throws InterruptedException {
         SparkConf sparkConf = new SparkConf().setAppName("StreamingWordCountApp").setMaster("local[2]");
-        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(5));
-        JavaReceiverInputDStream<String> lines = jssc.socketTextStream("hadoop001", 9999);
+        JavaStreamingContext jsc = new JavaStreamingContext(sparkConf, Durations.seconds(5));
+        JavaReceiverInputDStream<String> lines = jsc.socketTextStream("hadoop001", 9999);
         JavaPairDStream<String, Integer> result = lines.flatMap(x -> Arrays.asList(x.split(" ")).iterator())
                 .mapToPair(x -> new Tuple2<>(x, 1))
                 .reduceByKey((x, y) -> x + y);
 
         result.print();
 
-        jssc.start();
-        jssc.awaitTermination();
+        jsc.start();
+        jsc.awaitTermination();
     }
 }
