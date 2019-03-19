@@ -83,8 +83,7 @@ github源码地址: https://github.com/apache/spark
 
 
 (2) Spark Streaming工作原理(细粒度)
-
-
+    详见图
 
 
 
